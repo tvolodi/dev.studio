@@ -1,0 +1,6 @@
+@dev.studio.Server_HostAddress = http://localhost:5011
+
+GET {{dev.studio.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
