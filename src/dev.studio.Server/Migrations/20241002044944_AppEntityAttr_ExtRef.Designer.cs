@@ -3,6 +3,7 @@ using System;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using dev.studio.Server.DAL;
@@ -12,9 +13,11 @@ using dev.studio.Server.DAL;
 namespace dev.studio.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241002044944_AppEntityAttr_ExtRef")]
+    partial class AppEntityAttr_ExtRef
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,10 +86,10 @@ namespace dev.studio.Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int?>("Id"));
 
-                    b.Property<int?>("AppDataTypeId")
+                    b.Property<int>("AppDataTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("AppEntityId")
+                    b.Property<int>("AppEntityId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Code")
@@ -106,21 +109,22 @@ namespace dev.studio.Server.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int?>("ExtReferenceId")
                         .HasColumnType("integer");
 
-                    b.Property<bool?>("IsNullable")
+                    b.Property<bool>("IsNullable")
                         .HasColumnType("boolean");
 
-                    b.Property<bool?>("IsPrimaryKey")
+                    b.Property<bool>("IsPrimaryKey")
                         .HasColumnType("boolean");
 
-                    b.Property<bool?>("IsSearchable")
+                    b.Property<bool>("IsSearchable")
                         .HasColumnType("boolean");
 
-                    b.Property<bool?>("IsUnique")
+                    b.Property<bool>("IsUnique")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
@@ -204,11 +208,15 @@ namespace dev.studio.Server.Migrations
                 {
                     b.HasOne("dev.studio.Server.DAL.Models.AppDataType", "AppDataType")
                         .WithMany()
-                        .HasForeignKey("AppDataTypeId");
+                        .HasForeignKey("AppDataTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("dev.studio.Server.DAL.Models.AppEntity", "AppEntity")
                         .WithMany("AppEntityAttributes")
-                        .HasForeignKey("AppEntityId");
+                        .HasForeignKey("AppEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("dev.studio.Server.DAL.Models.AppEntityAttribute", "ExtReference")
                         .WithMany()

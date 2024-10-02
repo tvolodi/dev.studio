@@ -14,8 +14,11 @@ const AppMenu = () => {
         {
             label: 'Tables',
             items: [                
-                {label: "Modules", icon: 'pi pi-fw pi-database', to: '/tables/modules'},
-                {label: "DataTypes", icon: 'pi pi-fw pi-database', to: '/tables/data-types'},
+                {label: "AppModules", icon: 'pi pi-fw pi-database', to: '/tables/app-modules'},
+                {label: "AppDataTypes", icon: 'pi pi-fw pi-database', to: '/tables/app-data-types'},
+                {label: "AppEntities", icon: 'pi pi-fw pi-database', to: '/tables/app-entities'},
+                {label: "AppEntityAttributes", icon: 'pi pi-fw pi-database', to: '/tables/app-entity-attributes'},
+                {label: "SystemConfigs", icon: 'pi pi-fw pi-database', to: '/tables/system-config'},
 
             ]
         },

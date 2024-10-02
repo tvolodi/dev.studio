@@ -34,7 +34,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "app/(main)/tables/modules/page.jsx", "app/(main)/tables/app-data-types/page.jsx"  ],
   "exclude": [
     "node_modules"
   ]

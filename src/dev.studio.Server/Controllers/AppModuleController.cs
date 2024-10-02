@@ -12,11 +12,9 @@ namespace dev.studio.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AppModelController : BaseApiController<AppModule, DefaultEntityDto<AppModule>>
+    public class AppModuleController : BaseEntityController<AppModule, AppModuleDto>
     {
-        private readonly AppDbContext _appDbContext;
-        private readonly IMapper _mapper;
-        public AppModelController(AppDbContext appDbContext, IMapper mapper)
+        public AppModuleController(AppDbContext appDbContext, IMapper mapper)
         : base(appDbContext, mapper)
         {
         }

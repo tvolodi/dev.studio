@@ -6,5 +6,7 @@ namespace dev.studio.Server.DAL.Models
     {
         public string SchemaName { get; set; }
         public string OltpModuleName { get; set; }
+
+        public virtual List<AppEntity> AppEntities { get; set; }
     }
 }
