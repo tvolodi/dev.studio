@@ -14,11 +14,51 @@ import fetchRest from "../../../api/fetch-rest"
 const backendServiceUrl = `${process.env.app_protocol}://${process.env.app_host}:${process.env.app_port}/SystemConfig`
 
 const entityModel = {
-    id: {},
-    code: {},
-    name: {},
-    simpleValue: {},
-    value: {},
+    id: {
+        modelVarName: 'id',
+        modelType: 'string',
+        modelRequired: false,
+        modelDefault: '',
+        modelDescription: 'The id of the entity',
+        modelReadOnly: true,
+        header: 'Id',
+    },
+    code: {
+        modelVarName: 'code',
+        modelType: 'string',
+        modelRequired: true,
+        modelDefault: '',
+        modelDescription: 'The code of the entity',
+        modelReadOnly: false,
+        header: 'Code',
+    },
+    name: {
+        modelVarName: 'name',
+        modelType: 'string',
+        modelRequired: true,
+        modelDefault: '',
+        modelDescription: 'The name of the entity',
+        modelReadOnly: false,
+        header: 'Name',
+    },
+    simpleValue: {
+        modelVarName: 'simpleValue',
+        modelType: 'string',
+        modelRequired: false,
+        modelDefault: '',
+        modelDescription: 'The simple value of the entity',
+        modelReadOnly: false,
+        header: 'Simple Value',
+    },
+    value: {
+        modelVarName: 'value',
+        modelType: 'object',
+        modelRequired: false,
+        modelDefault: {},
+        modelDescription: 'The value of the entity',
+        modelReadOnly: false,
+        header: 'Value',
+    },
 }
 
 
@@ -31,16 +71,25 @@ export default function SystemConfig () {
 
     const [refreshTrigger, setRefreshTrigger] = useState(false)
 
+    const details = {}
+    Object.keys(entityModel).map(field => {
+        if (entityModel[field].modelType === 'string') {
+            details[field] = ''
+        } else details[field] = ''
+    })
+
     const detailEntityData = {}    
     const setDetailEntityData = {}
 
-    for (const field in entityModel) {
-        if(typeof entityModel[field] === 'object') {
-            [detailEntityData[field], setDetailEntityData[field]] = useState({})
-        } else {            
-            [detailEntityData[field], setDetailEntityData[field]] = useState('') 
-        }
-    }
+    const [detailData, setDetailData] = useState(details)
+
+    // for (const field in entityModel) {
+    //     if(typeof entityModel[field] === 'object') {
+    //         [detailEntityData[field], setDetailEntityData[field]] = useState({})
+    //     } else {            
+    //         [detailEntityData[field], setDetailEntityData[field]] = useState('') 
+    //     }
+    // }
 
     const [detailId, setDetailId] = useState('')
     const [detailCode, setDetailCode] = useState('')
@@ -89,7 +138,7 @@ export default function SystemConfig () {
         }
         fetchItems()
 
-    }, [])
+    })
 
     if (!itemList) return <div>Loading...</div>
 
@@ -181,15 +230,11 @@ export default function SystemConfig () {
                             {
                                 Object.keys(entityModel).map((field) => {
                                     return <Column 
-                                                field={field} 
-                                                header={field.split(/(?=[A-Z])/).map(s=>{
-                                                    let s1 = s.toLowerCase()
-                                                    s1 = s1.charAt(0).toUpperCase() + s1.slice(1)
-                                                    return s1
-                                                }).join(' ')} 
+                                                field={field.modelVarName} 
+                                                header={field.header}
                                                 sortable
-                                                >
-                                                
+                                                key={field.modelVarName}
+                                                >                                                
                                             </Column>
                                 }
                             )
@@ -203,7 +248,36 @@ export default function SystemConfig () {
                     minSize={10}
                 >
                     <div className="flex card flex-column gap-4">
-                        <FloatLabel>
+                        {
+                            Object.keys(entityModel).map((field, i) => {
+
+                                console.log('field', field)
+                                console.log('i', i)
+                                console.log('entityModel[field]', entityModel[field])
+                                console.log('detailEntityData[field]', detailEntityData[field])
+                                return
+                                    <div key={i}>
+                                    <FloatLabel key={i}>
+                                        <InputText
+                                            id={field}
+                                            value={detailData[field]}
+                                            onChange={(e) => {
+                                                const data = detailData
+                                                data[field] = e.target.value
+                                                setDetailData({...detailData, [e.target.name]: e.target.value})
+                                                // setDetailData[field](e.target.value)
+                                                setIsFormUpdated(true);
+                                            }
+                                            }
+                                        ></InputText>
+                                        <label htmlFor={field}>{entityModel[field].header}</label>
+                                    </FloatLabel>
+                                    </div>
+                            }
+                        )
+                        }
+                        
+                        {/* <FloatLabel>
                             <InputText readOnly={true}
                                 id="id"
                                 value={detailId}
@@ -256,7 +330,7 @@ export default function SystemConfig () {
                                 setIsFormUpdated(true);
                             }
                         }
-                        />
+                        /> */}
                         <Button label="OK" onClick={async () => {
                             if (isFormUpdated) {
                                 let updatedItem;
@@ -284,7 +358,9 @@ export default function SystemConfig () {
                         }
                         <Panel header="Details">
                             {/* <p className="m-0">isFormUpdated={isFormUpdated.toString()}</p>
-                            <p>process.env.app_host={process.env.app_host.toString()}</p> */}
+                            <p>process.env.app_host={process.env.app_host.toString()}</p> */
+                                console.log('entityModel', entityModel)
+                            }
                         </Panel>
 
                     </div>
