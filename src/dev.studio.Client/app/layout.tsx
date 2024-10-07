@@ -1,5 +1,6 @@
 'use client';
 import { LayoutProvider } from '../layout/context/layoutcontext';
+import { ComponentProvider } from '../layout/context/component-context';
 import { PrimeReactProvider } from 'primereact/api';
 import 'primereact/resources/primereact.css';
 import 'primeflex/primeflex.css';
@@ -11,6 +12,8 @@ interface RootLayoutProps {
     children: React.ReactNode;
 }
 
+console.log("ComponentProvider", ComponentProvider)
+
 export default function RootLayout({ children }: RootLayoutProps) {
     return (
         <html lang="en" suppressHydrationWarning>
@@ -19,7 +22,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </head>
             <body>
                 <PrimeReactProvider>
-                    <LayoutProvider>{children}</LayoutProvider>
+                    <LayoutProvider>
+                        <ComponentProvider>
+                            {children}
+                        </ComponentProvider>
+                    </LayoutProvider>
                 </PrimeReactProvider>
             </body>
         </html>

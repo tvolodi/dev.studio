@@ -1,8 +1,9 @@
 'use client'
+import React from "react"
 import { Column } from "primereact/column"
 import { DataTable } from "primereact/datatable"
 import { Splitter, SplitterPanel } from "primereact/splitter"
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext} from 'react';
 import { Button } from "primereact/button";
 import { FloatLabel } from "primereact/floatlabel";
 import { InputText } from "primereact/inputtext";
@@ -10,8 +11,12 @@ import { Panel } from "primereact/panel";
 import { Toolbar } from "primereact/toolbar";
 import { JsonEditor } from "json-edit-react";
 import fetchRest from "../../../api/fetch-rest"
+import { ComponentContext } from "../../../../layout/context/component-context"
+
 
 const backendServiceUrl = `${process.env.app_protocol}://${process.env.app_host}:${process.env.app_port}/SystemConfig`
+
+console.log('this2', this)
 
 const entityModel = {
     id: {
@@ -22,6 +27,7 @@ const entityModel = {
         modelDescription: 'The id of the entity',
         modelReadOnly: true,
         header: 'Id',
+        componentName: 'InputTextFloatLabel',
     },
     code: {
         modelVarName: 'code',
@@ -31,6 +37,8 @@ const entityModel = {
         modelDescription: 'The code of the entity',
         modelReadOnly: false,
         header: 'Code',
+        componentName: 'InputText',
+
     },
     name: {
         modelVarName: 'name',
@@ -40,6 +48,7 @@ const entityModel = {
         modelDescription: 'The name of the entity',
         modelReadOnly: false,
         header: 'Name',
+        componentName: 'InputText',
     },
     simpleValue: {
         modelVarName: 'simpleValue',
@@ -49,6 +58,7 @@ const entityModel = {
         modelDescription: 'The simple value of the entity',
         modelReadOnly: false,
         header: 'Simple Value',
+        componentName: 'InputText',
     },
     value: {
         modelVarName: 'value',
@@ -58,11 +68,21 @@ const entityModel = {
         modelDescription: 'The value of the entity',
         modelReadOnly: false,
         header: 'Value',
+        componentName: 'JsonEditor',
     },
 }
 
 
 export default function SystemConfig () {
+
+    let { components } = useContext(ComponentContext)    
+    
+    for (const field in entityModel) {
+        const componentName = entityModel[field].componentName
+        entityModel[field].component = components[componentName]
+    }
+
+    console.log('components', components)
 
     const [selectedRow, setSelectedRowState] = useState({})
     const [selectedRowIndex, setSelectedRowIndex] = useState(0)
@@ -83,14 +103,6 @@ export default function SystemConfig () {
 
     const [detailData, setDetailData] = useState(details)
 
-    // for (const field in entityModel) {
-    //     if(typeof entityModel[field] === 'object') {
-    //         [detailEntityData[field], setDetailEntityData[field]] = useState({})
-    //     } else {            
-    //         [detailEntityData[field], setDetailEntityData[field]] = useState('') 
-    //     }
-    // }
-
     const [detailId, setDetailId] = useState('')
     const [detailCode, setDetailCode] = useState('')
     const [detailName, setDetailName] = useState('')
@@ -108,6 +120,7 @@ export default function SystemConfig () {
     const [itemList, setItemList] = useState([{}])
 
     useEffect(() => {
+
         async function fetchItems () {
             let items = await fetchRest.getEntities(backendServiceUrl)
 
@@ -137,8 +150,7 @@ export default function SystemConfig () {
             }
         }
         fetchItems()
-
-    })
+    }, [])
 
     if (!itemList) return <div>Loading...</div>
 
@@ -189,6 +201,9 @@ export default function SystemConfig () {
         </div>
     )
 
+
+
+
     return (
         <div>
             <h1>SystemConfig</h1>
@@ -228,12 +243,12 @@ export default function SystemConfig () {
                             dataKey="id"
                         >
                             {
-                                Object.keys(entityModel).map((field) => {
+                                Object.keys(entityModel).map((field, i) => {
                                     return <Column 
                                                 field={field.modelVarName} 
                                                 header={field.header}
                                                 sortable
-                                                key={field.modelVarName}
+                                                key={i}
                                                 >                                                
                                             </Column>
                                 }
@@ -255,24 +270,38 @@ export default function SystemConfig () {
                                 console.log('i', i)
                                 console.log('entityModel[field]', entityModel[field])
                                 console.log('detailEntityData[field]', detailEntityData[field])
-                                return
-                                    <div key={i}>
-                                    <FloatLabel key={i}>
-                                        <InputText
-                                            id={field}
-                                            value={detailData[field]}
-                                            onChange={(e) => {
-                                                const data = detailData
-                                                data[field] = e.target.value
-                                                setDetailData({...detailData, [e.target.name]: e.target.value})
-                                                // setDetailData[field](e.target.value)
-                                                setIsFormUpdated(true);
-                                            }
-                                            }
-                                        ></InputText>
-                                        <label htmlFor={field}>{entityModel[field].header}</label>
-                                    </FloatLabel>
-                                    </div>
+
+
+                                const component = entityModel[field].component
+                                console.log('component', component)
+
+
+                                return React.createElement(
+                                        component, {
+                                            key: i,
+                                            id: field,
+                                            value: detailData[field],
+                                            fieldLabel: entityModel[field].header,
+                                        }                                    
+                                    )
+                                    // <div key={i}>                                        
+                                    //     <FloatLabel key={i}>
+                                    //         <InputText
+                                    //             id={field}
+                                    //             value={detailData[field]}
+                                    //             onChange={(e) => {
+                                    //                 const data = detailData
+                                    //                 data[field] = e.target.value
+                                    //                 setDetailData({...detailData, [e.target.name]: e.target.value})
+                                    //                 // setDetailData[field](e.target.value)
+                                    //                 setIsFormUpdated(true);
+                                    //             }
+                                    //             }
+                                    //         ></InputText>
+                                    //         <label htmlFor={field}>{entityModel[field].header}</label>
+                                    //     </FloatLabel>
+                                    // </div>
+                                // )
                             }
                         )
                         }
