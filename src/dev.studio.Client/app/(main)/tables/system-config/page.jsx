@@ -20,24 +20,24 @@ console.log('this2', this)
 
 const entityModel = {
     id: {
-        modelVarName: 'id',
+        fieldName: 'id',
         modelType: 'string',
         modelRequired: false,
         modelDefault: '',
-        modelDescription: 'The id of the entity',
-        modelReadOnly: true,
-        header: 'Id',
+        modelDescription: 'The id of the entity',        
+        fieldLabel: 'Id',
         componentName: 'InputTextFloatLabel',
+        readOnly: true,
     },
     code: {
-        modelVarName: 'code',
+        fieldName: 'code',
         modelType: 'string',
         modelRequired: true,
         modelDefault: '',
         modelDescription: 'The code of the entity',
-        modelReadOnly: false,
-        header: 'Code',
-        componentName: 'InputText',
+        readOnly: false,
+        fieldLabel: 'Code',
+        componentName: 'InputTextFloatLabel',
 
     },
     name: {
@@ -79,7 +79,7 @@ export default function SystemConfig () {
     
     for (const field in entityModel) {
         const componentName = entityModel[field].componentName
-        entityModel[field].component = components[componentName]
+        entityModel[field].component = components[componentName]   
     }
 
     console.log('components', components)
@@ -275,14 +275,20 @@ export default function SystemConfig () {
                                 const component = entityModel[field].component
                                 console.log('component', component)
 
-
+                                const props = entityModel[field]
+                                props.value = detailData[field]
+                                props.formData = detailData
+                                props.setFormData = setDetailData
+                                props.key = i
                                 return React.createElement(
-                                        component, {
-                                            key: i,
-                                            id: field,
-                                            value: detailData[field],
-                                            fieldLabel: entityModel[field].header,
-                                        }                                    
+                                        component, 
+                                        props
+                                        // {
+                                        //     key: i,
+                                        //     id: field,
+                                        //     value: detailData[field],
+                                        //     fieldLabel: entityModel[field].header,
+                                        // }                                    
                                     )
                                     // <div key={i}>                                        
                                     //     <FloatLabel key={i}>

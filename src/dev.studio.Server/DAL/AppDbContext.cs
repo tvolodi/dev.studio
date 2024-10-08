@@ -17,6 +17,12 @@ namespace dev.studio.Server.DAL
         public DbSet<AppModule> AppModules { get; set; }
         public DbSet<SystemConfig> SystemConfigs { get; set; }
 
+        public DbSet<CodeTemplate> CodeTemplates { get; set; }
+        public DbSet<UIComponent> UIComponents { get; set; }
+        public DbSet<UIField> UIFields { get; set; }
+        public DbSet<UIPage> UIPages { get; set; }
+        public DbSet<UIPageArea> UIPagesAreas { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -32,7 +38,23 @@ namespace dev.studio.Server.DAL
                 .HasForeignKey(e => e.AppEntityId);
 
             modelBuilder.Entity<AppEntityAttribute>()
-                .HasOne(e => e.AppDataType);                
+                .HasOne(e => e.AppDataType);
+
+            modelBuilder.Entity<UIComponent>()
+                .OwnsOne(e => e.Properties, d =>
+                {
+                    d.ToJson();
+                });
+
+            modelBuilder.Entity<UIField>()
+                .HasOne(e => e.UIPageArea)
+                .WithMany(e2 => e2.UIFields)
+                .HasForeignKey(e => e.UIPageAreaId);
+
+            modelBuilder.Entity<UIPageArea>()
+                .HasOne(e => e.UIPage)
+                .WithMany(e2 => e2.UIPageAreas)
+                .HasForeignKey(e => e.UIPageId);
         }
 
     }
